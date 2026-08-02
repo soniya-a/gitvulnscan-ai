@@ -23,11 +23,13 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:4028",
-        "http://127.0.0.1:4028",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    "http://localhost:4028",
+    "http://127.0.0.1:4028",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+
+    "https://gitvulnscan-idpewm8y-soniya-as-projects.vercel.app",
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
