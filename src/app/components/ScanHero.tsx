@@ -38,9 +38,7 @@ const FEATURE_PILLS = [
   { icon: GitBranch, label: 'GitHub Integration' },
 ];
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
-
+const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 export default function ScanHero() {
   const router = useRouter();
 
@@ -68,15 +66,10 @@ export default function ScanHero() {
       try {
         const cleanRepoUrl = data.repo_url.trim();
 
-        console.log('Starting repository scan:', cleanRepoUrl);
-        console.log('Backend:', API_BASE_URL);
+        console.log("Backend:", API_URL);
 
-        // -----------------------------------------------------
-        // CALL REAL FASTAPI BACKEND
-        // -----------------------------------------------------
-
-        const response = await fetch(
-          `${API_BASE_URL}/api/scan`,
+const response = await fetch(
+  `${API_URL}/api/scan`,
           {
             method: 'POST',
 
@@ -193,7 +186,7 @@ export default function ScanHero() {
 
         if (err instanceof TypeError) {
           message =
-            'Cannot connect to the VulnScanAI backend. Make sure FastAPI is running on port 8000.';
+          'Cannot connect to the VulnScanAI backend';
         } else if (err instanceof Error) {
           message = err.message;
         }
