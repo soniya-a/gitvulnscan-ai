@@ -34,10 +34,16 @@ logger = logging.getLogger(__name__)
 # CONFIGURATION
 # ============================================================
 
+import platform
+
+if platform.system() == "Windows":
+    DEFAULT_PATH = r"C:\Users\jsoni\Downloads\dependency-check-12.2.2-release\dependency-check\bin\dependency-check.bat"
+else:
+    DEFAULT_PATH = "/opt/render/project/src/backend/dependency-check/bin/dependency-check.sh"
+
 DEPENDENCY_CHECK_PATH = os.getenv(
     "DEPENDENCY_CHECK_PATH",
-    r"C:\Users\jsoni\Downloads\dependency-check-12.2.2-release"
-    r"\dependency-check\bin\dependency-check.bat",
+    DEFAULT_PATH,
 )
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
