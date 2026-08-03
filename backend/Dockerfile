@@ -2,11 +2,22 @@ FROM python:3.11-slim
 
 # Install Java and required tools
 RUN apt-get update && \
-    apt-get install -y default-jdk wget unzip git && \
+    apt-get install -y \
+    openjdk-17-jdk-headless \
+    wget \
+    unzip \
+    git && \
     rm -rf /var/lib/apt/lists/*
+    RUN java -version
+RUN which java
+RUN readlink -f $(which java)
+RUN ls -R /usr/lib/jvm
 
-ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-ENV PATH="$JAVA_HOME/bin:$PATH"
+RUN JAVA_PATH=$(readlink -f $(which java)) && \
+    JAVA_HOME=$(dirname $(dirname $JAVA_PATH)) && \
+    echo "Detected JAVA_HOME=$JAVA_HOME" && \
+    echo "export JAVA_HOME=$JAVA_HOME" >> /etc/profile && \
+    echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
 
 WORKDIR /app
 
