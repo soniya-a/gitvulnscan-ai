@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 # Install Java and required tools
 RUN apt-get update && \
-    apt-get install -y openjdk-17-jdk wget unzip git && \
+    apt-get install -y default-jdk wget unzip git && \
     rm -rf /var/lib/apt/lists/*
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
