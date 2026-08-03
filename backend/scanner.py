@@ -1265,6 +1265,14 @@ def run_owasp_scan(
                 timeout=600,
                 check=False,
             )
+            print("=" * 80)
+            print("Return Code:", result.returncode)
+            print("STDOUT:")
+            print(result.stdout)
+            print("STDERR:")
+            print(result.stderr)
+            print("=" * 80)
+            
 
         except subprocess.TimeoutExpired as exc:
 
@@ -1279,8 +1287,7 @@ def run_owasp_scan(
                 "Unable to start "
                 "OWASP Dependency-Check."
             ) from exc
-
-                # ====================================================
+        # ====================================================
         # FIND REPORT
         # ====================================================
 
@@ -1294,8 +1301,23 @@ def run_owasp_scan(
         print("OWASP STDERR:\n", result.stderr)
         print("=" * 80)
 
-        if not report_path.exists():
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"""
+Dependency-Check failed
 
+Return Code:
+{result.returncode}
+
+STDOUT:
+{result.stdout}
+
+STDERR:
+{result.stderr}
+"""
+            )
+
+        if not report_path.exists():
             logger.error(
                 "Dependency-Check failed. "
                 "stdout=%s stderr=%s",
@@ -1304,10 +1326,8 @@ def run_owasp_scan(
             )
 
             raise RuntimeError(
-                "OWASP Dependency-Check did not "
-                "generate a JSON report."
+                "OWASP Dependency-Check did not generate a JSON report."
             )
-
         # ====================================================
         # SAVE DEBUG COPY
         # ====================================================
