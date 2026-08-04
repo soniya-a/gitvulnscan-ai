@@ -39,7 +39,7 @@ import platform
 if platform.system() == "Windows":
     DEFAULT_PATH = r"C:\Users\jsoni\Downloads\dependency-check-12.2.2-release\dependency-check\bin\dependency-check.bat"
 else:
-    DEFAULT_PATH = "/opt/render/project/src/backend/dependency-check/bin/dependency-check.sh"
+    DEFAULT_PATH = "/opt/dependency-check/bin/dependency-check.sh"
 
 DEPENDENCY_CHECK_PATH = os.getenv(
     "DEPENDENCY_CHECK_PATH",
@@ -1175,6 +1175,8 @@ def _parse_report(
 # RUN OWASP DEPENDENCY-CHECK
 # ============================================================
 
+# Ensure JAVA_HOME is set
+os.environ.setdefault("JAVA_HOME", "/usr/lib/jvm/java-17-openjdk-amd64")
 def run_owasp_scan(
     repo_path: str,
 ) -> dict[str, Any]:
@@ -1244,8 +1246,7 @@ def run_owasp_scan(
 
             "--out",
             output_dir,
-
-            "--noupdate",
+            
         ]
 
         logger.info(
@@ -1257,6 +1258,11 @@ def run_owasp_scan(
         # ====================================================
 
         try:
+            env = os.environ.copy()
+
+            print("Dependency Check:", dependency_check)
+            print("JAVA_HOME:", os.environ.get("JAVA_HOME"))
+            print("PATH:", os.environ.get("PATH"))
 
             result = subprocess.run(
                 command,
@@ -1264,7 +1270,9 @@ def run_owasp_scan(
                 text=True,
                 timeout=600,
                 check=False,
+                env=env,
             )
+
             print("=" * 80)
             print("Return Code:", result.returncode)
             print("STDOUT:")
@@ -1272,21 +1280,17 @@ def run_owasp_scan(
             print("STDERR:")
             print(result.stderr)
             print("=" * 80)
-            
 
         except subprocess.TimeoutExpired as exc:
-
             raise RuntimeError(
-                "OWASP Dependency-Check exceeded "
-                "the 10-minute scan limit."
+                "OWASP Dependency-Check exceeded the 10-minute scan limit."
             ) from exc
 
         except OSError as exc:
-
             raise RuntimeError(
-                "Unable to start "
-                "OWASP Dependency-Check."
+                "Unable to start OWASP Dependency-Check."
             ) from exc
+
         # ====================================================
         # FIND REPORT
         # ====================================================
@@ -1328,6 +1332,7 @@ STDERR:
             raise RuntimeError(
                 "OWASP Dependency-Check did not generate a JSON report."
             )
+
         # ====================================================
         # SAVE DEBUG COPY
         # ====================================================
